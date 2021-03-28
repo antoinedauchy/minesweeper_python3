@@ -1,48 +1,93 @@
 from tkinter import *
 from PIL import Image, ImageTk
+from random import seed, randint
+
+window = 0
+
+def load_image(path):
+    img = Image.open(path)
+    img = img.resize((40, 40), Image.ANTIALIAS)
+    img = ImageTk.PhotoImage(img)
+    return img
+
+class Block:
+    def __init__(self, img, name):
+        self.img = img
+        self.name = name
+
+class Imgs:
+    def __init__(self):
+        self.zero = load_image("images/0.png")
+        self.one = load_image("images/1.png")
+        self.two = load_image("images/2.png")
+        self.three = load_image("images/3.png")
+        self.four = load_image("images/4.png")
+        self.five = load_image("images/5.png")
+        self.six = load_image("images/6.png")
+        self.seven = load_image("images/7.png")
+        self.height = load_image("images/8.png")
+        self.bomb = load_image("images/bomb.png")
+        self.nothing = load_image("images/nothing.png")
+        self.flagged = load_image("images/flagged.png")
+
 
 class Game:
-    def __init__(self, width, height):
-        self.widht = width
+    def __init__(self, width, height, nb_bombs):
+        self.width = width
         self.height = height
-        self.grid = [[0] * widht] * height
+        self.nb_bombs = nb_bombs
+        self.imgs = Imgs()
+        self.grid = self.__get_new_grid()
+        self.canvas = Canvas(window, width=480, height=360)
+        self.canvas.pack()
 
 
-    def get_new_grid():
+    def __put_bombs(self, grid):
+        counter = 0
+        seed()
+        while counter < self.nb_bombs:
+            while True:
+                bomb_pos_x = randint(0, self.width - 1)
+                bomb_pos_y = randint(0, self.height - 1)
+                if grid[bomb_pos_y][bomb_pos_x].name == 42:
+                    grid[bomb_pos_y][bomb_pos_x] = Block(self.imgs.bomb, 43)
+                    break
+            counter += 1
+
+
+    def __get_new_grid(self):
+        grid = [0] * self.height
         y = 0
-        while y < height:
+        while y < self.height:
             x = 0
-            while x < width:
-                self.grid[y][x] = "nothing"
+            grid[y] = [0] * self.width
+            while x < self.width:
+                grid[y][x] = Block(self.imgs.nothing, 42)
                 x += 1
             y += 1
+        self.__put_bombs(grid)
+        return (grid)
+
+
+    def print(self):
+        y = 0
+        while y < self.height:
+            x = 0
+            while x < self.width:
+                self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.grid[y][x].img)
+                x += 1
+            y += 1
+
 
 def main():
     print("Hello World!")
     #create the window
     window = Tk()
     window.title("Minesweeper")
-    window.geometry("480x360")
+    window.geometry("375x375")
 
-    #create canvas
-    canvas = Canvas(window, width=480, height=360)
-    #canvas.create_rectangle(50, 50, 100, 100, fill="red", outline = 'blue')
-    #img = PhotoImage(file="images/bomb.pgm")
-    #img = img.subsample(2)
-    #img = img.resize((250, 250), Image.ANTIALIAS)
-    #img = PhotoImage(Image("images/bomb.pgm"))
-    img = Image.open("3.png")
-    img = img.resize((50, 50), Image.ANTIALIAS)
-    img = ImageTk.PhotoImage(img)
-    
-    canvas.create_image(20, 20, anchor=NW, image=img)
-    canvas.pack()
-
-    #print_an_image
-    
-    
-    
-    
+    game = Game(9, 9, 10)
+    game.print()
     window.mainloop()
 
 if __name__ == "__main__":
