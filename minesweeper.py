@@ -46,8 +46,40 @@ class Game:
 
     def __right_click(self, event):
         print("right click at", event.x, event.y)
+
+
+    def __count_bombs(self, grid, y, x):
+        nb_bombs = 0
+        if y - 1 >= 0 and x - 1 >= 0 and grid[y - 1][x - 1] == self.imgs.bomb:
+            nb_bombs += 1
+        if y - 1 >= 0 and grid[y - 1][x] == self.imgs.bomb:
+            nb_bombs += 1
+        if y - 1 >= 0 and x + 1 < self.width and grid[y - 1][x + 1] == self.imgs.bomb:
+            nb_bombs += 1
+        if x - 1 >= 0 and grid[y][x - 1] == self.imgs.bomb:
+            nb_bombs += 1
+        if x + 1 < self.width and grid[y][x + 1] == self.imgs.bomb:
+            nb_bombs += 1
+        if y + 1 < self.height and x - 1 >= 0 and grid[y + 1][x - 1] == self.imgs.bomb:
+            nb_bombs += 1
+        if y + 1 < self.height and grid[y + 1][x] == self.imgs.bomb:
+            nb_bombs += 1
+        if y + 1 < self.height and x + 1 < self.width and grid[y + 1][x + 1] == self.imgs.bomb:
+            nb_bombs += 1
+        return nb_bombs
     
-    
+    def __put_numbers(self, grid):
+        y = 0
+        tab_numbers = [self.imgs.zero, self.imgs.one, self.imgs.two, self.imgs.three, self.imgs.four,
+        self.imgs.five, self.imgs.six, self.imgs.seven, self.imgs.height]
+        while y < self.height:
+            x = 0
+            while x < self.width:
+                if grid[y][x] != self.imgs.bomb:
+                    grid[y][x] = tab_numbers[self.__count_bombs(grid, y, x)]
+                x += 1
+            y += 1
+
     def __put_bombs(self, grid):
         counter = 0
         seed()
@@ -72,6 +104,7 @@ class Game:
                 x += 1
             y += 1
         self.__put_bombs(grid)
+        self.__put_numbers(grid)
         return (grid)
 
 
