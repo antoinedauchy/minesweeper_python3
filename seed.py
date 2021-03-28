@@ -1,11 +1,4 @@
-from random import seed, randint
+width = 2
+height = 2
+grid = [[0] * width] * height
 
-seed()
-for _ in range(10):
-	value = randint(0, 1)
-	print(value)
-
-while(True):
-    print("ok")
-    if (True):
-        break

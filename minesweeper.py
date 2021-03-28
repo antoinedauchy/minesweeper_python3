@@ -10,10 +10,6 @@ def load_image(path):
     img = ImageTk.PhotoImage(img)
     return img
 
-class Block:
-    def __init__(self, img, name):
-        self.img = img
-        self.name = name
 
 class Imgs:
     def __init__(self):
@@ -40,8 +36,18 @@ class Game:
         self.grid = self.__get_new_grid()
         self.canvas = Canvas(window, width=480, height=360)
         self.canvas.pack()
+        self.canvas.bind("<Button-1>", self.__left_click)
+        self.canvas.bind("<Button-2>", self.__right_click)
 
 
+    def __left_click(self, event):
+        print("left_click at", event.x, event.y)
+
+
+    def __right_click(self, event):
+        print("right click at", event.x, event.y)
+    
+    
     def __put_bombs(self, grid):
         counter = 0
         seed()
@@ -49,8 +55,8 @@ class Game:
             while True:
                 bomb_pos_x = randint(0, self.width - 1)
                 bomb_pos_y = randint(0, self.height - 1)
-                if grid[bomb_pos_y][bomb_pos_x].name == 42:
-                    grid[bomb_pos_y][bomb_pos_x] = Block(self.imgs.bomb, 43)
+                if grid[bomb_pos_y][bomb_pos_x] == self.imgs.nothing:
+                    grid[bomb_pos_y][bomb_pos_x] = self.imgs.bomb
                     break
             counter += 1
 
@@ -62,7 +68,7 @@ class Game:
             x = 0
             grid[y] = [0] * self.width
             while x < self.width:
-                grid[y][x] = Block(self.imgs.nothing, 42)
+                grid[y][x] = self.imgs.nothing
                 x += 1
             y += 1
         self.__put_bombs(grid)
@@ -74,9 +80,10 @@ class Game:
         while y < self.height:
             x = 0
             while x < self.width:
-                self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.grid[y][x].img)
+                self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.grid[y][x])
                 x += 1
             y += 1
+
 
 
 def main():
@@ -84,10 +91,11 @@ def main():
     #create the window
     window = Tk()
     window.title("Minesweeper")
-    window.geometry("375x375")
+    window.geometry("370x370")
 
     game = Game(9, 9, 10)
     game.print()
+    
     window.mainloop()
 
 if __name__ == "__main__":
