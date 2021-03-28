@@ -11,6 +11,11 @@ def load_image(path):
     return img
 
 
+class Block:
+    def __init__(self, img, discovered):
+        self.img = img
+        self.discovered = discovered
+
 class Imgs:
     def __init__(self):
         self.zero = load_image("images/0.png")
@@ -45,26 +50,27 @@ class Game:
 
 
     def __right_click(self, event):
-        print("right click at", event.x, event.y)
+        print("right click at", (event.x - 25) / 40, (event.y - 25) / 40)
+
 
 
     def __count_bombs(self, grid, y, x):
         nb_bombs = 0
-        if y - 1 >= 0 and x - 1 >= 0 and grid[y - 1][x - 1] == self.imgs.bomb:
+        if y - 1 >= 0 and x - 1 >= 0 and grid[y - 1][x - 1].img == self.imgs.bomb:
             nb_bombs += 1
-        if y - 1 >= 0 and grid[y - 1][x] == self.imgs.bomb:
+        if y - 1 >= 0 and grid[y - 1][x].img == self.imgs.bomb:
             nb_bombs += 1
-        if y - 1 >= 0 and x + 1 < self.width and grid[y - 1][x + 1] == self.imgs.bomb:
+        if y - 1 >= 0 and x + 1 < self.width and grid[y - 1][x + 1].img == self.imgs.bomb:
             nb_bombs += 1
-        if x - 1 >= 0 and grid[y][x - 1] == self.imgs.bomb:
+        if x - 1 >= 0 and grid[y][x - 1].img == self.imgs.bomb:
             nb_bombs += 1
-        if x + 1 < self.width and grid[y][x + 1] == self.imgs.bomb:
+        if x + 1 < self.width and grid[y][x + 1].img == self.imgs.bomb:
             nb_bombs += 1
-        if y + 1 < self.height and x - 1 >= 0 and grid[y + 1][x - 1] == self.imgs.bomb:
+        if y + 1 < self.height and x - 1 >= 0 and grid[y + 1][x - 1].img == self.imgs.bomb:
             nb_bombs += 1
-        if y + 1 < self.height and grid[y + 1][x] == self.imgs.bomb:
+        if y + 1 < self.height and grid[y + 1][x].img == self.imgs.bomb:
             nb_bombs += 1
-        if y + 1 < self.height and x + 1 < self.width and grid[y + 1][x + 1] == self.imgs.bomb:
+        if y + 1 < self.height and x + 1 < self.width and grid[y + 1][x + 1].img == self.imgs.bomb:
             nb_bombs += 1
         return nb_bombs
     
@@ -75,8 +81,8 @@ class Game:
         while y < self.height:
             x = 0
             while x < self.width:
-                if grid[y][x] != self.imgs.bomb:
-                    grid[y][x] = tab_numbers[self.__count_bombs(grid, y, x)]
+                if grid[y][x].img != self.imgs.bomb:
+                    grid[y][x].img = tab_numbers[self.__count_bombs(grid, y, x)]
                 x += 1
             y += 1
 
@@ -87,8 +93,8 @@ class Game:
             while True:
                 bomb_pos_x = randint(0, self.width - 1)
                 bomb_pos_y = randint(0, self.height - 1)
-                if grid[bomb_pos_y][bomb_pos_x] == self.imgs.nothing:
-                    grid[bomb_pos_y][bomb_pos_x] = self.imgs.bomb
+                if grid[bomb_pos_y][bomb_pos_x].img == self.imgs.nothing:
+                    grid[bomb_pos_y][bomb_pos_x].img = self.imgs.bomb
                     break
             counter += 1
 
@@ -100,7 +106,7 @@ class Game:
             x = 0
             grid[y] = [0] * self.width
             while x < self.width:
-                grid[y][x] = self.imgs.nothing
+                grid[y][x] = Block(self.imgs.nothing, False)
                 x += 1
             y += 1
         self.__put_bombs(grid)
@@ -113,7 +119,13 @@ class Game:
         while y < self.height:
             x = 0
             while x < self.width:
-                self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.grid[y][x])
+                if self.grid[y][x].img == self.imgs.flagged:
+                    self.canvas.create_image(x * 40 + 25, y * 40 + 25, images=self.imgs.flagged)
+                elif self.grid[y][x].discovered == True:
+                    self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.grid[y][x].img)
+                else:
+                    self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.imgs.nothing)
+                
                 x += 1
             y += 1
 
