@@ -40,10 +40,11 @@ class Game:
         self.nb_bombs = nb_bombs
         self.imgs = Imgs()
         self.grid = self.__get_new_grid()
-        self.canvas = Canvas(window, width=480, height=360)
+        self.canvas = Canvas(window, width=370, height=370)
         self.canvas.pack()
         self.canvas.bind("<Button-1>", self.__left_click)
         self.canvas.bind("<Button-2>", self.__right_click)
+        self.__lost_game = 0
 
 
     def __recursive_exploration(self, x, y):
@@ -71,14 +72,43 @@ class Game:
             self.__recursive_exploration(x + 1, y + 1)
 
 
+    def __print_lost_game(self):
+        y = 0
+        while y < self.height:
+            x = 0
+            while x < self.width:
+                self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.grid[y][x].img)
+                x += 1
+            y += 1
+        #game_over_text = Label(window, text="Game Over", font=("Courrier", 40))
+        #game_over_text.pack()
+        #window.tag_raise(game_over_text)
+        
+        
+        #self.canvas.create_rectangle(185, 185, 400, 100, fill="black", stipple="gray50")
+        self.canvas.create_text(183, 185, text="Game Over", font=("Helvetica", "56"), fill="white")
+        self.canvas.create_text(187, 185, text="Game Over", font=("Helvetica", "56"), fill="white")
+        self.canvas.create_text(185, 183, text="Game Over", font=("Helvetica", "56"), fill="white")
+        self.canvas.create_text(185, 187, text="Game Over", font=("Helvetica", "56"), fill="white")
+        self.canvas.create_text(185, 185, text="Game Over", font=("Helvetica", "56"))
+
+
     def __left_click(self, event):
+        if self.__lost_game == True:
+            self.__lost_game = False
+            self.grid = self.__get_new_grid()
+            self.print()
+            return
         x_block = (int)(((event.x) - 5) / 40)
         y_block = (int)(((event.y) - 5) / 40)
         if x_block < 0 or x_block >= self.width or y_block < 0 or y_block >= self.height:
             return
         if self.grid[y_block][x_block].flagged == False and self.grid[y_block][x_block].img == self.imgs.zero:
             self.__recursive_exploration(x_block, y_block)
-        self.print()
+            self.print()
+        elif self.grid[y_block][x_block].flagged == False and self.grid[y_block][x_block].img == self.imgs.bomb:
+            self.__print_lost_game()
+            self.__lost_game = 1
 
 
     def __right_click(self, event):
@@ -177,6 +207,7 @@ def main():
     window = Tk()
     window.title("Minesweeper")
     window.geometry("370x370")
+    window.resizable(False, False)
 
     game = Game(9, 9, 10)
     game.print()
