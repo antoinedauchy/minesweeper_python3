@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    minesweeper.py                                     :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: adauchy <adauchy@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2021/03/29 23:05:20 by adauchy           #+#    #+#              #
+#    Updated: 2021/03/29 23:05:50 by adauchy          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 from tkinter import *
 from PIL import Image, ImageTk
 from random import seed, randint
