@@ -46,13 +46,38 @@ class Game:
         self.canvas.bind("<Button-2>", self.__right_click)
 
 
+    def __recursive_exploration(self, x, y):
+        if self.grid[y][x].discovered == True:
+            return
+        self.grid[y][x].discovered = True
+        self.grid[y][x].flagged = False
+        if self.grid[y][x].img != self.imgs.zero:
+            return
+        if y - 1 >= 0 and x - 1 >= 0:
+            self.__recursive_exploration(x - 1, y - 1)
+        if y - 1 >= 0:
+            self.__recursive_exploration(x, y - 1)
+        if y - 1 >= 0 and x + 1 < self.width:
+            self.__recursive_exploration(x + 1, y - 1)
+        if x - 1 >= 0:
+            self.__recursive_exploration(x - 1, y)
+        if x + 1 < self.width:
+            self.__recursive_exploration(x + 1, y)
+        if y + 1 < self.height and x - 1 >= 0:
+            self.__recursive_exploration(x - 1, y + 1)
+        if y + 1 < self.height:
+            self.__recursive_exploration(x, y + 1)
+        if y + 1 < self.height and x + 1 < self.width:
+            self.__recursive_exploration(x + 1, y + 1)
+
+
     def __left_click(self, event):
         x_block = (int)(((event.x) - 5) / 40)
         y_block = (int)(((event.y) - 5) / 40)
         if x_block < 0 or x_block >= self.width or y_block < 0 or y_block >= self.height:
             return
-        if self.grid[y_block][x_block].discovered == False and self.grid[y_block][x_block].flagged == False:
-            self.grid[y_block][x_block].discovered = True
+        if self.grid[y_block][x_block].flagged == False and self.grid[y_block][x_block].img == self.imgs.zero:
+            self.__recursive_exploration(x_block, y_block)
         self.print()
 
 
