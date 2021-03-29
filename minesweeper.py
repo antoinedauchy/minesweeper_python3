@@ -12,9 +12,10 @@ def load_image(path):
 
 
 class Block:
-    def __init__(self, img, discovered):
+    def __init__(self, img, discovered, flagged):
         self.img = img
         self.discovered = discovered
+        self.flagged = flagged
 
 class Imgs:
     def __init__(self):
@@ -46,11 +47,25 @@ class Game:
 
 
     def __left_click(self, event):
-        print("left_click at", event.x, event.y)
+        x_block = (int)(((event.x) - 5) / 40)
+        y_block = (int)(((event.y) - 5) / 40)
+        if x_block < 0 or x_block >= self.width or y_block < 0 or y_block >= self.height:
+            return
+        if self.grid[y_block][x_block].discovered == False and self.grid[y_block][x_block].flagged == False:
+            self.grid[y_block][x_block].discovered = True
+        self.print()
 
 
     def __right_click(self, event):
-        print("right click at", (event.x - 25) / 40, (event.y - 25) / 40)
+        x_block = (int)(((event.x) - 5) / 40)
+        y_block = (int)(((event.y) - 5) / 40)
+        if x_block < 0 or x_block >= self.width or y_block < 0 or y_block >= self.height:
+            return
+        if self.grid[y_block][x_block].flagged == False and self.grid[y_block][x_block].discovered == False:
+            self.grid[y_block][x_block].flagged = True
+        elif self.grid[y_block][x_block].flagged == True:
+            self.grid[y_block][x_block].flagged = False
+        self.print()
 
 
 
@@ -106,7 +121,7 @@ class Game:
             x = 0
             grid[y] = [0] * self.width
             while x < self.width:
-                grid[y][x] = Block(self.imgs.nothing, False)
+                grid[y][x] = Block(self.imgs.nothing, False, False)
                 x += 1
             y += 1
         self.__put_bombs(grid)
@@ -119,8 +134,8 @@ class Game:
         while y < self.height:
             x = 0
             while x < self.width:
-                if self.grid[y][x].img == self.imgs.flagged:
-                    self.canvas.create_image(x * 40 + 25, y * 40 + 25, images=self.imgs.flagged)
+                if self.grid[y][x].flagged == True:
+                    self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.imgs.flagged)
                 elif self.grid[y][x].discovered == True:
                     self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.grid[y][x].img)
                 else:
