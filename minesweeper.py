@@ -74,6 +74,7 @@ class Game:
 
 
     def __print_lost_game(self):
+        self.canvas.delete("all")
         y = 0
         while y < self.height:
             x = 0
@@ -211,6 +212,7 @@ class Game:
 
 
     def print(self):
+        self.canvas.delete("all")
         y = 0
         while y < self.height:
             x = 0
@@ -221,7 +223,6 @@ class Game:
                     self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.grid[y][x].img)
                 else:
                     self.canvas.create_image(x * 40 + 25, y * 40 + 25, image=self.imgs.nothing)
-                
                 x += 1
             y += 1
 
